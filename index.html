@@ -21,6 +21,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://getticketbloom.com/og-image.png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","name":"TicketBloom","url":"https://getticketbloom.com/","logo":"https://getticketbloom.com/apple-touch-icon.png","slogan":"Fill every slot."},{"@type":"SoftwareApplication","name":"TicketBloom","applicationCategory":"BusinessApplication","operatingSystem":"Web, iOS, Android","description":"Ticketing for timed-entry attractions: sell by entry time, cap every slot, get paid to your own Square account, deliver Wallet passes and scan guests in at the gate.","url":"https://getticketbloom.com/"}]}</script>
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,7 +34,8 @@
   --ink: #10261F;        /* deep stem green */
   --muted: #56695F;
   --line: #D6DFD8;
-  --bloom: #E5376B;      /* petal pink: primary accent */
+  --bloom: #D12C5F;      /* action pink: buttons, links, emphasis (AA on white and paper) */
+  --petal: #E5376B;      /* logo petal pink: the mark only */
   --bloom-ink: #FFFFFF;
   --slot: #F2B033;       /* marigold: the chosen slot */
   --slot-soft: #FCEFD2;
@@ -49,13 +51,13 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --paper: #0C1B16; --surface: #13261F; --ink: #EAF2EC; --muted: #9DB2A7; --line: #24392F;
-    --bloom: #FF5C8A; --bloom-ink: #1A0710; --slot: #F6C04E; --slot-soft: #3A2F14; --bloom-soft: #3B1624; --sold: #3A4F45;
+    --bloom: #FF5C8A; --petal: #FF5C8A; --bloom-ink: #1A0710; --slot: #F6C04E; --slot-soft: #3A2F14; --bloom-soft: #3B1624; --sold: #3A4F45;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --paper: #0C1B16; --surface: #13261F; --ink: #EAF2EC; --muted: #9DB2A7; --line: #24392F;
-  --bloom: #FF5C8A; --bloom-ink: #1A0710; --slot: #F6C04E; --slot-soft: #3A2F14; --bloom-soft: #3B1624; --sold: #3A4F45;
+  --bloom: #FF5C8A; --petal: #FF5C8A; --bloom-ink: #1A0710; --slot: #F6C04E; --slot-soft: #3A2F14; --bloom-soft: #3B1624; --sold: #3A4F45;
   color-scheme: dark;
 }
 
@@ -143,6 +145,13 @@ p { margin: 0; }
 .board-foot .sum { font-size: 15px; }
 .board-foot .sum b { font-family: var(--font-mono); font-weight: 500; font-variant-numeric: tabular-nums; }
 .board-note { font-size: 12px; color: var(--muted); }
+.kinds { display: flex; flex-wrap: wrap; gap: 6px; margin-top: -4px; }
+.kinds button { border: 1px solid var(--line); background: var(--paper); color: var(--muted); border-radius: 99px; padding: 6px 12px; font: 500 13px/1 var(--font-body); cursor: pointer; transition: background-color .2s ease, color .2s ease, border-color .2s ease; }
+.kinds button:hover { color: var(--ink); border-color: var(--ink); }
+.kinds button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.slots.swap .slot { animation: up .45s cubic-bezier(.2,.8,.2,1) both; }
+.slots.swap li:nth-child(2) .slot { animation-delay: 30ms; } .slots.swap li:nth-child(3) .slot { animation-delay: 60ms; } .slots.swap li:nth-child(4) .slot { animation-delay: 90ms; }
+.slots.swap li:nth-child(5) .slot { animation-delay: 120ms; } .slots.swap li:nth-child(6) .slot { animation-delay: 150ms; } .slots.swap li:nth-child(7) .slot { animation-delay: 180ms; } .slots.swap li:nth-child(8) .slot { animation-delay: 210ms; }
 .board { position: relative; overflow: hidden; }
 .booked { position: absolute; inset: 0; background: var(--surface); display: grid; place-content: center; justify-items: center; gap: 12px; text-align: center; padding: 24px; opacity: 0; visibility: hidden; transition: opacity .35s ease, visibility 0s .35s; }
 .booked.show { opacity: 1; visibility: visible; transition: opacity .35s ease; }
@@ -426,6 +435,44 @@ input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 
 .sent h3 { font-size: 30px; }
 .sent p { color: var(--muted); }
 
+/* Money flow */
+.flow { display: grid; grid-template-columns: minmax(0, 1fr) minmax(40px, 0.35fr) minmax(0, 1fr) minmax(40px, 0.35fr) minmax(0, 1fr); align-items: center; }
+.node { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 20px; display: grid; gap: 6px; align-content: start; min-width: 0; height: 100%; }
+.node .n-ico { width: 44px; height: 44px; border-radius: 12px; background: var(--paper); border: 1px solid var(--line); display: grid; place-items: center; color: var(--bloom); margin-bottom: 6px; }
+.node .n-ico svg { width: 24px; height: 24px; }
+.node .n-k { font: 500 12px/1.2 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.node b { font: 700 clamp(22px, 2.4vw, 28px)/1.1 var(--font-display); letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.node .n-s { font-size: 14px; color: var(--muted); }
+.node.n2 { border-color: var(--bloom); box-shadow: 0 0 0 1px var(--bloom) inset; }
+.pipe { position: relative; height: 2px; background: repeating-linear-gradient(90deg, var(--line) 0 6px, transparent 6px 11px); }
+.pipe::after { content: ""; position: absolute; right: -2px; top: 50%; width: 8px; height: 8px; border-top: 2px solid var(--muted); border-right: 2px solid var(--muted); transform: translateY(-50%) rotate(45deg); }
+.coin { position: absolute; top: 50%; left: 0; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: var(--slot); box-shadow: 0 0 0 5px color-mix(in srgb, var(--slot) 25%, transparent); opacity: 0; }
+.tb-node { margin-top: 18px; display: flex; align-items: center; gap: 16px; padding: 18px 20px; border: 1.5px dashed var(--line); border-radius: 18px; }
+.tb-node svg { width: 40px; height: 40px; flex: none; }
+.tb-node p { color: var(--muted); max-width: 60em; }
+.tb-node b { color: var(--ink); font-weight: 600; }
+@media (prefers-reduced-motion: no-preference) {
+  .p1 .coin { animation: coinx 4.4s ease-in-out infinite; }
+  .p2 .coin { animation: coinx2 4.4s ease-in-out infinite; }
+  .node.n2 { animation: ping2 4.4s ease-out infinite; }
+  .node.n3 { animation: ping3 4.4s ease-out infinite; }
+  @keyframes coinx { 0%, 4% { left: 0; opacity: 0; } 8% { opacity: 1; } 36% { left: 100%; opacity: 1; } 40%, 100% { left: 100%; opacity: 0; } }
+  @keyframes coinx2 { 0%, 50% { left: 0; opacity: 0; } 54% { opacity: 1; } 82% { left: 100%; opacity: 1; } 86%, 100% { left: 100%; opacity: 0; } }
+  @keyframes ping2 { 0%, 36% { transform: none; } 41% { transform: scale(1.025); } 48%, 100% { transform: none; } }
+  @keyframes ping3 { 0%, 82% { transform: none; border-color: var(--line); } 87% { transform: scale(1.025); border-color: var(--slot); } 96%, 100% { transform: none; border-color: var(--line); } }
+}
+@media (max-width: 800px) {
+  .flow { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 44px auto 44px auto; justify-items: stretch; }
+  .pipe { width: 2px; height: 100%; justify-self: center; background: repeating-linear-gradient(180deg, var(--line) 0 6px, transparent 6px 11px); }
+  .pipe::after { right: auto; left: 50%; top: auto; bottom: -2px; transform: translateX(-50%) rotate(135deg); }
+  .coin { left: 50%; top: 0; margin: -8px 0 0 -8px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .p1 .coin { animation-name: coiny; } .p2 .coin { animation-name: coiny2; }
+    @keyframes coiny { 0%, 4% { top: 0; opacity: 0; } 8% { opacity: 1; } 36% { top: 100%; opacity: 1; } 40%, 100% { top: 100%; opacity: 0; } }
+    @keyframes coiny2 { 0%, 50% { top: 0; opacity: 0; } 54% { opacity: 1; } 82% { top: 100%; opacity: 1; } 86%, 100% { top: 100%; opacity: 0; } }
+  }
+}
+
 /* FAQ */
 :root { interpolate-size: allow-keywords; }
 .faq .wrap { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: clamp(28px, 6vw, 80px); align-items: start; }
@@ -504,7 +551,7 @@ form .btn { justify-self: start; }
   <div class="wrap">
     <a class="brand" href="#top" aria-label="TicketBloom home">
       <svg class="mark" viewBox="-40 -40 80 80" aria-hidden="true">
-        <g fill="var(--bloom)"><use href="#petal"/><use href="#petal" transform="rotate(90)"/><use href="#petal" transform="rotate(135)"/><use href="#petal" transform="rotate(180)"/><use href="#petal" transform="rotate(225)"/><use href="#petal" transform="rotate(270)"/><use href="#petal" transform="rotate(315)"/></g>
+        <g fill="var(--petal)"><use href="#petal"/><use href="#petal" transform="rotate(90)"/><use href="#petal" transform="rotate(135)"/><use href="#petal" transform="rotate(180)"/><use href="#petal" transform="rotate(225)"/><use href="#petal" transform="rotate(270)"/><use href="#petal" transform="rotate(315)"/></g>
         <use href="#petal" transform="rotate(45)" fill="var(--slot)"/><circle r="4.5" fill="var(--ink)"/>
       </svg>
       TicketBloom
@@ -529,7 +576,7 @@ form .btn { justify-self: start; }
     <div class="wrap">
       <div class="hero-copy">
         <svg class="mark hero-mark" viewBox="-40 -40 80 80" aria-hidden="true">
-          <g fill="var(--bloom)">
+          <g fill="var(--petal)">
             <use class="petal" href="#petal" style="--i:0;--r:0deg" transform="rotate(0)"/>
             <use class="petal" href="#petal" style="--i:2;--r:90deg" transform="rotate(90)"/>
             <use class="petal" href="#petal" style="--i:3;--r:135deg" transform="rotate(135)"/>
@@ -542,7 +589,7 @@ form .btn { justify-self: start; }
           <circle r="4.5" fill="var(--ink)"/>
         </svg>
         <h1><span class="w">Fill</span> <span class="w">every</span> <span class="w"><em>slot.</em></span></h1>
-        <p class="lede"><strong>TicketBloom is ticketing built for timed-entry attractions.</strong> Sell by the half hour, cap every slot, get paid straight to your own Square account, and move the line at the gate in seconds.</p>
+        <p class="lede"><strong>TicketBloom is ticketing built for timed-entry attractions.</strong> Sell by entry time, cap every slot, get paid straight to your own Square account, and move the line at the gate in seconds.</p>
         <div class="cta-row">
           <a class="btn btn-primary" href="#demo">Book a demo</a>
           <a class="btn btn-ghost" href="#how">See how it works</a>
@@ -551,8 +598,14 @@ form .btn { justify-self: start; }
 
       <div class="board" aria-label="Example of a time-slot picker">
         <div class="board-head">
-          <h2>Riverside Gardens</h2>
-          <span class="date">SAT · MAY 9 · ENTRY TIMES</span>
+          <h2 id="board-name">Riverside Gardens</h2>
+          <span class="date" id="board-date">SAT · MAY 9 · ENTRY TIMES</span>
+        </div>
+        <div class="kinds" role="group" aria-label="Example attraction">
+          <button type="button" data-k="garden" aria-pressed="true">Garden</button>
+          <button type="button" data-k="museum" aria-pressed="false">Museum</button>
+          <button type="button" data-k="zoo" aria-pressed="false">Zoo</button>
+          <button type="button" data-k="tour" aria-pressed="false">Tour</button>
         </div>
         <ul class="slots" id="slots"></ul>
         <div class="board-foot">
@@ -562,7 +615,7 @@ form .btn { justify-self: start; }
         <p class="board-note">Example event. Try it: pick a time and check out. Guests see your name, colors and domain, not ours.</p>
         <div class="booked" id="booked" role="status">
           <svg class="burst" viewBox="-40 -40 80 80" aria-hidden="true">
-            <g fill="var(--bloom)">
+            <g fill="var(--petal)">
               <use class="petal" href="#petal" style="--i:0;--r:0deg"/><use class="petal" href="#petal" style="--i:2;--r:90deg"/><use class="petal" href="#petal" style="--i:3;--r:135deg"/><use class="petal" href="#petal" style="--i:4;--r:180deg"/><use class="petal" href="#petal" style="--i:5;--r:225deg"/><use class="petal" href="#petal" style="--i:6;--r:270deg"/><use class="petal" href="#petal" style="--i:7;--r:315deg"/>
             </g>
             <use class="petal" href="#petal" style="--i:1;--r:45deg" fill="var(--slot)"/><circle r="4.5" fill="var(--ink)"/>
@@ -802,17 +855,38 @@ form .btn { justify-self: start; }
     </div>
   </section>
 
-  <section class="section" id="details" style="padding-top: clamp(64px, 9vw, 112px)">
+  <section class="section money" id="money">
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="eyebrow">The details</span>
-        <h2>The parts organizers ask about first.</h2>
+        <span class="eyebrow">Your money</span>
+        <h2>Ticket money goes to you, not through us.</h2>
+        <p>TicketBloom connects to your own Square account. Every sale is charged on your account and paid out to your bank on Square's normal schedule.</p>
       </div>
-      <div class="details">
-        <div class="detail reveal"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path class="soft" d="M4 14h16v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/><path d="M12 3.5V13M8 9.5l4 3.5 4-3.5"/></svg><h3>Paid to your Square</h3><p>Ticket money lands in your own Square account. We never hold your funds.</p></div>
-        <div class="detail reveal"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path class="soft" d="M3 8V6.5A2.5 2.5 0 0 1 5.5 4h13A2.5 2.5 0 0 1 21 6.5V8Z"/><path d="M3 8h18M7 13h6M7 16h4"/></svg><h3>Your domain, your emails</h3><p>Tickets sell on your web address, and receipts come from your name.</p></div>
-        <div class="detail reveal"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M10.5 18.5h3"/><path class="soft" d="M9 7h6v7H9Z"/><path d="m9.8 10.6 1.5 1.5 2.9-3"/></svg><h3>Scan on phones you own</h3><p>The scanner app runs on iPhone and Android. No special hardware to rent.</p></div>
-        <div class="detail reveal"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.8-4.8"/><circle class="soft" cx="10.5" cy="10.5" r="3.5"/></svg><h3>Find any order fast</h3><p>Guest can't find their ticket? Look them up by name or email at the gate.</p></div>
+      <div class="flow reveal" aria-label="How a ticket payment moves">
+        <div class="node n1">
+          <span class="n-ico"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path class="soft" d="M9 8h6v5H9Z"/><path d="M9 8h6v5H9ZM10.5 18.5h3"/></svg></span>
+          <span class="n-k">Guest checks out</span>
+          <b>$96.00</b>
+          <span class="n-s">4 tickets · Sat, May 9 · 11:30 AM</span>
+        </div>
+        <div class="pipe p1" aria-hidden="true"><i class="coin"></i></div>
+        <div class="node n2">
+          <span class="n-ico"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path class="soft" d="M3 9h18v3H3Z"/><path d="M3 9h18M7 15h4"/></svg></span>
+          <span class="n-k">Your Square account</span>
+          <b>Sale recorded</b>
+          <span class="n-s">Charged on your merchant account, at your Square rate</span>
+        </div>
+        <div class="pipe p2" aria-hidden="true"><i class="coin"></i></div>
+        <div class="node n3">
+          <span class="n-ico"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 9.5 12 4l8.5 5.5"/><path class="soft" d="M5 10h14v8H5Z"/><path d="M6 10.5v7M10 10.5v7M14 10.5v7M18 10.5v7M3.5 20h17"/></svg></span>
+          <span class="n-k">Your bank</span>
+          <b>Payout</b>
+          <span class="n-s">On Square's normal payout schedule</span>
+        </div>
+      </div>
+      <div class="tb-node reveal">
+        <svg class="mark" viewBox="-40 -40 80 80" aria-hidden="true"><g fill="var(--petal)"><use href="#petal"/><use href="#petal" transform="rotate(90)"/><use href="#petal" transform="rotate(135)"/><use href="#petal" transform="rotate(180)"/><use href="#petal" transform="rotate(225)"/><use href="#petal" transform="rotate(270)"/><use href="#petal" transform="rotate(315)"/></g><use href="#petal" transform="rotate(45)" fill="var(--slot)"/><circle r="4.5" fill="var(--ink)"/></svg>
+        <p><b>TicketBloom runs everything around the payment:</b> the entry times, the tickets and passes, the gate and the reports. It never holds your ticket money, so there's nothing to wait on and nothing to chase.</p>
       </div>
     </div>
   </section>
@@ -899,7 +973,7 @@ form .btn { justify-self: start; }
   <div class="wrap">
     <a class="brand" href="#top">
       <svg class="mark" viewBox="-40 -40 80 80" aria-hidden="true">
-        <g fill="var(--bloom)"><use href="#petal"/><use href="#petal" transform="rotate(90)"/><use href="#petal" transform="rotate(135)"/><use href="#petal" transform="rotate(180)"/><use href="#petal" transform="rotate(225)"/><use href="#petal" transform="rotate(270)"/><use href="#petal" transform="rotate(315)"/></g>
+        <g fill="var(--petal)"><use href="#petal"/><use href="#petal" transform="rotate(90)"/><use href="#petal" transform="rotate(135)"/><use href="#petal" transform="rotate(180)"/><use href="#petal" transform="rotate(225)"/><use href="#petal" transform="rotate(270)"/><use href="#petal" transform="rotate(315)"/></g>
         <use href="#petal" transform="rotate(45)" fill="var(--slot)"/><circle r="4.5" fill="var(--ink)"/>
       </svg>
       TicketBloom
@@ -929,7 +1003,7 @@ form .btn { justify-self: start; }
       var li = document.createElement('li');
       var b = document.createElement('button');
       b.type = 'button';
-      b.className = 'slot' + (!out && left <= 40 ? ' low' : '');
+      b.className = 'slot' + (!out && left <= Math.max(3, CAP * 0.16) ? ' low' : '');
       b.disabled = out;
       b.setAttribute('aria-pressed', String(i === picked));
       b.innerHTML = '<span class="time">' + s.t + '</span><span class="left">' + (out ? 'Sold out' : left + ' left') +
@@ -944,18 +1018,41 @@ form .btn { justify-self: start; }
   render();
 
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var ticks = 0;
   if (!reduce) {
-    var ticks = 0;
     var timer = setInterval(function () {
       // Earlier slots sell faster, like a real day.
       var open = slots.map(function (s, i) { return i; }).filter(function (i) { return slots[i].sold < CAP && i !== picked; });
       if (!open.length || ++ticks > 60) { clearInterval(timer); return; }
       var i = open[Math.floor(Math.pow(Math.random(), 1.8) * open.length)];
-      slots[i].sold = Math.min(CAP, slots[i].sold + 1 + Math.floor(Math.random() * 4));
+      slots[i].sold = Math.min(CAP, slots[i].sold + 1 + Math.floor(Math.random() * Math.max(1, CAP / 70)));
       render();
       var b = list.children[i] && list.children[i].firstChild; if (b) b.classList.add('bump');
     }, 1400);
   }
+
+  // Hero example switcher: each kind of attraction runs on a different rhythm.
+  var KINDS = {
+    garden: { name: 'Riverside Gardens', date: 'SAT · MAY 9 · ENTRY TIMES', start: 600, step: 30, cap: 250, price: 24 },
+    museum: { name: 'Meridian Science Museum', date: 'SUN · MAR 15 · ENTRY TIMES', start: 570, step: 20, cap: 80, price: 18 },
+    zoo: { name: 'Bayside Zoo', date: 'SAT · JUN 6 · ENTRY TIMES', start: 540, step: 30, cap: 400, price: 29 },
+    tour: { name: 'Old Town Walking Tour', date: 'FRI · SEP 18 · DEPARTURES', start: 540, step: 60, cap: 20, price: 35 }
+  };
+  var FILL = [1, 1, 0.86, 0.78, 0.64, 0.47, 0.29, 0.12];
+  function clock(m) { var hh = Math.floor(m / 60), mm = m % 60; return ((hh + 11) % 12 + 1) + ':' + (mm < 10 ? '0' : '') + mm + (hh >= 12 ? ' PM' : ' AM'); }
+  document.querySelectorAll('.kinds button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var k = KINDS[btn.dataset.k];
+      document.querySelectorAll('.kinds button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === btn)); });
+      CAP = k.cap; PRICE = k.price; picked = 2; ticks = 0;
+      slots = FILL.map(function (f, i) { return { t: clock(k.start + i * k.step), sold: Math.round(f * k.cap) }; });
+      document.getElementById('board-name').textContent = k.name;
+      document.getElementById('board-date').textContent = k.date;
+      document.getElementById('booked').classList.remove('show');
+      list.classList.remove('swap'); void list.offsetWidth; list.classList.add('swap');
+      render();
+    });
+  });
 
   // Hero checkout: book the picked slot, show the confirmation, take the tickets off the board.
   var booked = document.getElementById('booked');
@@ -996,7 +1093,7 @@ form .btn { justify-self: start; }
         Object.keys(links).forEach(function (k) { links[k].setAttribute('aria-current', String(k === e.target.id)); });
       });
     }, { rootMargin: '-45% 0px -50% 0px' });
-    ['how', 'yours', 'details', 'faq', 'demo'].forEach(function (id) { var el = document.getElementById(id); if (el) spy.observe(el); });
+    ['how', 'yours', 'money', 'faq', 'demo'].forEach(function (id) { var el = document.getElementById(id); if (el) spy.observe(el); });
   }
 
   // Shared: organizer branding that both the phone and the "Make it yours" preview read.
@@ -1241,7 +1338,7 @@ form .btn { justify-self: start; }
         form.innerHTML = '';
         var done = document.createElement('div');
         done.className = 'sent'; done.setAttribute('role', 'status'); done.tabIndex = -1;
-        done.innerHTML = '<svg viewBox="-40 -40 80 80" aria-hidden="true"><g fill="var(--bloom)"><use href="#petal"/><use href="#petal" transform="rotate(90)"/><use href="#petal" transform="rotate(135)"/><use href="#petal" transform="rotate(180)"/><use href="#petal" transform="rotate(225)"/><use href="#petal" transform="rotate(270)"/><use href="#petal" transform="rotate(315)"/></g><use href="#petal" transform="rotate(45)" fill="var(--slot)"/><circle r="4.5" fill="var(--ink)"/></svg><h3>Request sent.</h3><p></p>';
+        done.innerHTML = '<svg viewBox="-40 -40 80 80" aria-hidden="true"><g fill="var(--petal)"><use href="#petal"/><use href="#petal" transform="rotate(90)"/><use href="#petal" transform="rotate(135)"/><use href="#petal" transform="rotate(180)"/><use href="#petal" transform="rotate(225)"/><use href="#petal" transform="rotate(270)"/><use href="#petal" transform="rotate(315)"/></g><use href="#petal" transform="rotate(45)" fill="var(--slot)"/><circle r="4.5" fill="var(--ink)"/></svg><h3>Request sent.</h3><p></p>';
         done.querySelector('p').textContent = "Thanks. We'll reply to " + email + " to set up a walkthrough" + (who ? ' for ' + who : '') + '.';
         form.appendChild(done);
         done.focus();
