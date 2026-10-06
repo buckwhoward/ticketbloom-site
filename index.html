@@ -81,9 +81,27 @@ p { margin: 0; }
 .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font: 700 22px/1 var(--font-display); letter-spacing: -0.03em; }
 .brand svg { width: 34px; height: 34px; }
 .nav { display: flex; align-items: center; gap: 28px; font-size: 15px; }
-.nav a:not(.btn) { text-decoration: none; color: var(--muted); }
-.nav a:not(.btn):hover { color: var(--ink); }
-@media (max-width: 760px) { .nav a:not(.btn) { display: none; } }
+.nav-links { display: flex; align-items: center; gap: 28px; }
+.nav-links a { text-decoration: none; color: var(--muted); position: relative; padding-block: 6px; }
+.nav-links a:hover, .nav-links a[aria-current="true"] { color: var(--ink); }
+.nav-links a::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; border-radius: 2px; background: var(--bloom); transform: scaleX(0); transform-origin: left; transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+.nav-links a[aria-current="true"]::after { transform: scaleX(1); }
+.menu-btn { display: none; width: 42px; height: 42px; border-radius: 50%; border: 1.5px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; place-items: center; }
+.menu-btn svg { width: 18px; height: 18px; }
+.menu-btn .x { display: none; }
+@media (max-width: 760px) {
+  .nav { gap: 10px; }
+  .menu-btn { display: grid; }
+  .nav-links { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; padding: 8px var(--gutter) 16px; background: var(--paper); border-bottom: 1px solid var(--line); box-shadow: 0 20px 30px -20px color-mix(in srgb, var(--ink) 30%, transparent); }
+  .nav-links a { padding: 14px 0; font: 600 20px/1.2 var(--font-display); color: var(--ink); border-bottom: 1px solid var(--line); }
+  .nav-links a:last-child { border-bottom: 0; }
+  .nav-links a::after { display: none; }
+  .site-head.open .nav-links { display: flex; animation: drop .25s ease both; }
+  .site-head.open .menu-btn .bars { display: none; }
+  .site-head.open .menu-btn .x { display: block; }
+  @keyframes drop { from { opacity: 0; transform: translateY(-6px); } }
+}
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 0 22px; border-radius: 999px; border: 0; font: 600 16px/1 var(--font-body); text-decoration: none; cursor: pointer; transition: transform .15s ease, background-color .15s ease; }
 .btn-primary { background: var(--bloom); color: var(--bloom-ink); }
@@ -125,6 +143,17 @@ p { margin: 0; }
 .board-foot .sum { font-size: 15px; }
 .board-foot .sum b { font-family: var(--font-mono); font-weight: 500; font-variant-numeric: tabular-nums; }
 .board-note { font-size: 12px; color: var(--muted); }
+.board { position: relative; overflow: hidden; }
+.booked { position: absolute; inset: 0; background: var(--surface); display: grid; place-content: center; justify-items: center; gap: 12px; text-align: center; padding: 24px; opacity: 0; visibility: hidden; transition: opacity .35s ease, visibility 0s .35s; }
+.booked.show { opacity: 1; visibility: visible; transition: opacity .35s ease; }
+.booked .burst { width: 96px; height: 96px; }
+.booked.show .burst .petal { animation: burst .7s cubic-bezier(.2,.9,.25,1.2) both; animation-delay: calc(var(--i) * 40ms); }
+@keyframes burst { from { transform: rotate(var(--r)) scale(0); opacity: 0; } to { transform: rotate(var(--r)) scale(1); opacity: 1; } }
+.booked .burst .petal { transform: rotate(var(--r)); transform-origin: 0 0; }
+.booked h3 { font-size: 28px; }
+.booked p { color: var(--muted); font-size: 15px; max-width: 22em; }
+.booked p b { color: var(--ink); font-family: var(--font-mono); font-weight: 500; }
+.booked .again { background: none; border: 0; color: var(--bloom); font: 600 15px/1 var(--font-body); cursor: pointer; padding: 8px; }
 
 /* Built-for marquee */
 .for { border-block: 1px solid var(--line); padding-block: 18px; }
@@ -325,6 +354,12 @@ input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; hei
 input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--surface); border: 2px solid var(--ink); }
 input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--surface); border: 2px solid var(--ink); }
 .cfg-cta { justify-self: start; }
+.upload { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px; }
+.upload label.btn { cursor: pointer; }
+.upload input:focus-visible + label { outline: 3px solid var(--slot); outline-offset: 3px; }
+.upload .hint { font-size: 13px; color: var(--muted); }
+.upload .clear { background: none; border: 0; padding: 4px; color: var(--bloom); font: 600 14px/1 var(--font-body); cursor: pointer; }
+.org-logo.img { background: #FFFFFF center / 82% no-repeat; color: transparent; }
 .fld input[type=range] { min-height: 0; height: 6px; padding: 0; border: 0; border-radius: 99px; margin-block: 10px; background: linear-gradient(90deg, var(--ink) var(--p, 50%), var(--line) var(--p, 50%)); }
 .swatches button { outline: 1px solid color-mix(in srgb, var(--ink) 18%, transparent); outline-offset: -1px; }
 
@@ -380,7 +415,35 @@ input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 
 /* Demo request */
 .demo .wrap { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(32px, 6vw, 80px); align-items: start; }
 @media (max-width: 860px) { .demo .wrap { grid-template-columns: minmax(0, 1fr); } }
-.demo .section-head { margin-bottom: 0; }
+.demo .section-head { margin-bottom: 32px; }
+.next { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; counter-reset: nx; }
+.next li { counter-increment: nx; display: grid; grid-template-columns: 40px 1fr; gap: 4px 14px; padding: 16px 0; border-top: 1px solid var(--line); }
+.next li::before { content: counter(nx); grid-row: span 2; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: var(--bloom-soft); color: var(--bloom); font: 500 13px/1 var(--font-mono); }
+.next b { font: 700 18px/1.2 var(--font-display); }
+.next span { color: var(--muted); font-size: 15px; }
+.sent { grid-column: 1 / -1; display: grid; justify-items: start; gap: 12px; padding: 12px 0; animation: up .6s cubic-bezier(.2,.8,.2,1) both; }
+.sent svg { width: 56px; height: 56px; }
+.sent h3 { font-size: 30px; }
+.sent p { color: var(--muted); }
+
+/* FAQ */
+:root { interpolate-size: allow-keywords; }
+.faq .wrap { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); gap: clamp(28px, 6vw, 80px); align-items: start; }
+@media (max-width: 860px) { .faq .wrap { grid-template-columns: minmax(0, 1fr); } }
+.faq .section-head { position: sticky; top: 100px; margin-bottom: 0; }
+@media (max-width: 860px) { .faq .section-head { position: static; } }
+.qa { border-top: 1px solid var(--line); }
+.qa details { border-bottom: 1px solid var(--line); }
+.qa summary { list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 22px 0; cursor: pointer; font: 700 clamp(18px, 1.8vw, 21px)/1.25 var(--font-display); letter-spacing: -0.01em; }
+.qa summary::-webkit-details-marker { display: none; }
+.qa summary:hover { color: var(--bloom); }
+.qa .pm { flex: none; width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--line); display: grid; place-items: center; transition: transform .35s cubic-bezier(.2,.8,.2,1), background-color .25s ease, border-color .25s ease; }
+.qa .pm svg { width: 12px; height: 12px; }
+.qa details[open] .pm { transform: rotate(45deg); background: var(--bloom); border-color: var(--bloom); color: var(--bloom-ink); }
+.qa details::details-content { block-size: 0; overflow: hidden; transition: block-size .4s cubic-bezier(.2,.8,.2,1), content-visibility .4s allow-discrete; }
+.qa details[open]::details-content { block-size: auto; }
+.qa .ans { padding: 0 48px 24px 0; color: var(--muted); display: grid; gap: 10px; }
+@media (prefers-reduced-motion: reduce) { .qa details::details-content { transition: none; } }
 form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: clamp(20px, 3vw, 32px); }
 @media (max-width: 560px) { form { grid-template-columns: minmax(0, 1fr); } }
 .fld { display: grid; gap: 6px; min-width: 0; }
@@ -447,9 +510,16 @@ form .btn { justify-self: start; }
       TicketBloom
     </a>
     <nav class="nav" aria-label="Main">
-      <a href="#how">How it works</a>
-      <a href="#yours">Make it yours</a>
+      <div class="nav-links" id="nav-links">
+        <a href="#how">How it works</a>
+        <a href="#yours">Make it yours</a>
+        <a href="#faq">Questions</a>
+      </div>
       <a class="btn btn-primary btn-sm" href="#demo">Book a demo</a>
+      <button class="menu-btn" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Menu">
+        <svg class="bars" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 5h14M2 13h14"/></svg>
+        <svg class="x" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m4 4 10 10M14 4 4 14"/></svg>
+      </button>
     </nav>
   </div>
 </header>
@@ -487,9 +557,20 @@ form .btn { justify-self: start; }
         <ul class="slots" id="slots"></ul>
         <div class="board-foot">
           <p class="sum" id="sum">2 tickets · <b>11:00 AM</b> · <b>$48.00</b></p>
-          <button class="btn btn-primary btn-sm" type="button" tabindex="-1" aria-disabled="true">Checkout</button>
+          <button class="btn btn-primary btn-sm" type="button" id="board-buy">Checkout</button>
         </div>
-        <p class="board-note">Example event. Guests see your name, colors and domain, not ours.</p>
+        <p class="board-note">Example event. Try it: pick a time and check out. Guests see your name, colors and domain, not ours.</p>
+        <div class="booked" id="booked" role="status">
+          <svg class="burst" viewBox="-40 -40 80 80" aria-hidden="true">
+            <g fill="var(--bloom)">
+              <use class="petal" href="#petal" style="--i:0;--r:0deg"/><use class="petal" href="#petal" style="--i:2;--r:90deg"/><use class="petal" href="#petal" style="--i:3;--r:135deg"/><use class="petal" href="#petal" style="--i:4;--r:180deg"/><use class="petal" href="#petal" style="--i:5;--r:225deg"/><use class="petal" href="#petal" style="--i:6;--r:270deg"/><use class="petal" href="#petal" style="--i:7;--r:315deg"/>
+            </g>
+            <use class="petal" href="#petal" style="--i:1;--r:45deg" fill="var(--slot)"/><circle r="4.5" fill="var(--ink)"/>
+          </svg>
+          <h3>Booked.</h3>
+          <p id="booked-msg"></p>
+          <button class="again" type="button" id="board-again">Back to entry times</button>
+        </div>
       </div>
     </div>
   </section>
@@ -660,6 +741,14 @@ form .btn { justify-self: start; }
               <button type="button" style="--c:#1F2937" data-c="#1F2937" aria-label="Charcoal" aria-pressed="false"></button>
             </div>
           </div>
+          <div class="fld"><span class="cfg-label">Logo <span style="font-weight:400;color:var(--muted)">(optional)</span></span>
+            <div class="upload">
+              <input id="c-logo" class="sr-only" type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp">
+              <label class="btn btn-ghost btn-sm" for="c-logo">Upload your logo</label>
+              <button class="clear" type="button" id="c-logo-clear" hidden>Remove</button>
+              <span class="hint" id="c-logo-hint">It stays in your browser. Nothing is uploaded.</span>
+            </div>
+          </div>
           <div class="cfg-row">
             <div class="fld"><label for="c-open">Opens</label>
               <select id="c-open"><option value="8">8:00 AM</option><option value="9">9:00 AM</option><option value="10" selected>10:00 AM</option><option value="11">11:00 AM</option><option value="12">12:00 PM</option><option value="16">4:00 PM</option><option value="17">5:00 PM</option><option value="18">6:00 PM</option></select>
@@ -728,15 +817,63 @@ form .btn { justify-self: start; }
     </div>
   </section>
 
-  <section class="section demo" id="demo">
+  <section class="section faq" id="faq" style="padding-top:0">
     <div class="wrap">
       <div class="section-head reveal">
-        <span class="eyebrow">Book a demo</span>
-        <h2>See it with your own event.</h2>
-        <p>Tell us about your attraction and we'll walk you through TicketBloom set up with your own dates, entry times and capacity.</p>
+        <span class="eyebrow">Questions</span>
+        <h2>Straight answers.</h2>
+        <p>Something else on your mind? Ask it in the demo form below.</p>
+      </div>
+      <div class="qa reveal">
+          <details open>
+            <summary>Where does the ticket money go?<span class="pm" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg></span></summary>
+            <div class="ans"><p>Straight to your own Square account, on Square's normal payout schedule. TicketBloom never holds your ticket revenue, and card processing is billed by Square at your own rate.</p></div>
+          </details>
+          <details>
+            <summary>What do my gate staff need?<span class="pm" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg></span></summary>
+            <div class="ans"><p>The TicketBloom scanner app on an iPhone or Android phone. Scanning one ticket brings up the whole order, so a family of five checks in with a single tap. Staff can also look a guest up by name or email when they can't find their ticket.</p></div>
+          </details>
+          <details>
+            <summary>Will guests know they're using TicketBloom?<span class="pm" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg></span></summary>
+            <div class="ans"><p>Only if you tell them. Ticket pages run on your own web address, confirmation emails come from your name and domain, and Wallet passes carry your logo and colours.</p></div>
+          </details>
+          <details>
+            <summary>Can we still sell tickets at the gate?<span class="pm" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg></span></summary>
+            <div class="ans"><p>Yes. Walk-up sales draw from the same entry times as online sales, so the gate and the website can never oversell a slot between them.</p></div>
+          </details>
+          <details>
+            <summary>What happens when an entry time sells out?<span class="pm" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg></span></summary>
+            <div class="ans"><p>It closes on its own the moment the last ticket sells, and guests see the next open times. Change a slot's capacity at any point and it updates everywhere at once.</p></div>
+          </details>
+          <details>
+            <summary>How do guests get their tickets?<span class="pm" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg></span></summary>
+            <div class="ans"><p>By email from your address, with a pass they can add to Apple Wallet. The ticket also works straight from the email on any phone.</p></div>
+          </details>
+          <details>
+            <summary>Can we see which marketing actually sells tickets?<span class="pm" aria-hidden="true"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 1v10M1 6h10"/></svg></span></summary>
+            <div class="ans"><p>Yes. Every order records the ad, email, post or partner link that brought the guest in, so you can see which spend filled which days.</p></div>
+          </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="section demo" id="demo">
+    <div class="wrap">
+      <div>
+        <div class="section-head reveal">
+          <span class="eyebrow">Book a demo</span>
+          <h2>See it with your own event.</h2>
+          <p>Tell us about your attraction and we'll walk you through TicketBloom set up with your own dates, entry times and capacity.</p>
+        </div>
+        <ol class="next">
+          <li><b>Tell us about your attraction</b><span>A minute on the form: your dates, your volume and how you sell today.</span></li>
+          <li><b>See it with your own entry times</b><span>On a call, we build your event in TicketBloom and walk through checkout, passes and scanning with it.</span></li>
+          <li><b>Go on sale when you're ready</b><span>Connect your Square account and domain, and open sales on your schedule.</span></li>
+        </ol>
       </div>
       <form id="demo-form" novalidate>
         <input type="hidden" name="_subject" value="TicketBloom demo request">
+        <input type="hidden" name="setup" id="f-setup" value="">
         <div class="fld"><label for="f-name">Your name</label><input id="f-name" name="name" autocomplete="name" required></div>
         <div class="fld"><label for="f-email">Work email</label><input id="f-email" name="email" type="email" autocomplete="email" required></div>
         <div class="fld"><label for="f-event">Event or attraction</label><input id="f-event" name="event" required></div>
@@ -820,7 +957,47 @@ form .btn { justify-self: start; }
     }, 1400);
   }
 
+  // Hero checkout: book the picked slot, show the confirmation, take the tickets off the board.
+  var booked = document.getElementById('booked');
+  document.getElementById('board-buy').addEventListener('click', function () {
+    var s = slots[picked];
+    if (CAP - s.sold < QTY) return;
+    s.sold += QTY;
+    document.getElementById('booked-msg').innerHTML = QTY + ' tickets for <b>' + s.t + '</b>. The payment went straight to the organizer\'s own Square account.';
+    booked.classList.add('show');
+    render();
+    document.getElementById('board-again').focus({ preventScroll: true });
+  });
+  document.getElementById('board-again').addEventListener('click', function () {
+    booked.classList.remove('show');
+    if (CAP - slots[picked].sold < QTY) {
+      var next = slots.findIndex(function (x) { return CAP - x.sold >= QTY; });
+      if (next >= 0) picked = next;
+    }
+    render();
+    document.getElementById('board-buy').focus({ preventScroll: true });
+  });
 
+  // Header: phone menu and current-section highlight.
+  var head = document.querySelector('.site-head'), menuBtn = document.querySelector('.menu-btn');
+  menuBtn.addEventListener('click', function () {
+    var open = head.classList.toggle('open');
+    menuBtn.setAttribute('aria-expanded', String(open));
+  });
+  document.querySelectorAll('.nav-links a').forEach(function (a) {
+    a.addEventListener('click', function () { head.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false'); });
+  });
+  if ('IntersectionObserver' in window) {
+    var links = {};
+    document.querySelectorAll('.nav-links a').forEach(function (a) { links[a.getAttribute('href').slice(1)] = a; });
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        Object.keys(links).forEach(function (k) { links[k].setAttribute('aria-current', String(k === e.target.id)); });
+      });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    ['how', 'yours', 'details', 'faq', 'demo'].forEach(function (id) { var el = document.getElementById(id); if (el) spy.observe(el); });
+  }
 
   // Shared: organizer branding that both the phone and the "Make it yours" preview read.
   var org = { name: 'Riverside Gardens', color: '#2E7D5B' };
@@ -829,7 +1006,11 @@ form .btn { justify-self: start; }
     var name = org.name.trim() || 'Your Attraction';
     document.querySelectorAll('[data-org-name]').forEach(function (e) { e.textContent = name; });
     document.querySelectorAll('[data-org-upper]').forEach(function (e) { e.textContent = name.toUpperCase(); });
-    document.querySelectorAll('[data-mono]').forEach(function (e) { e.textContent = name.charAt(0).toUpperCase(); });
+    document.querySelectorAll('[data-mono]').forEach(function (e) {
+      e.textContent = name.charAt(0).toUpperCase();
+      e.classList.toggle('img', !!org.logo);
+      e.style.backgroundImage = org.logo ? 'url("' + org.logo + '")' : '';
+    });
   }
 
   // Decorative QR art: three finder squares plus a fixed pseudo-random fill.
@@ -996,9 +1177,27 @@ form .btn { justify-self: start; }
       $('c-t1').textContent = count;
       $('c-t2').textContent = (count * cap).toLocaleString('en-US');
       $('c-t3').textContent = (count * cap * 7).toLocaleString('en-US');
+      $('f-setup').value = name + ' · ' + t12(open * 60) + ' to ' + t12(close * 60) + ' · every ' + len + ' min · ' + cap + ' per slot · ' + org.color + (org.logo ? ' · logo uploaded' : '');
     }
 
     $('c-name').addEventListener('input', render);
+    $('c-logo').addEventListener('change', function () {
+      var f = this.files && this.files[0];
+      if (!f) return;
+      if (f.size > 4 * 1024 * 1024) { $('c-logo-hint').textContent = 'That file is over 4 MB. Try a smaller one.'; return; }
+      var r = new FileReader();
+      r.onload = function () {
+        org.logo = r.result; $('c-logo-clear').hidden = false;
+        $('c-logo-hint').textContent = 'Looking good. It stays in your browser.';
+        render();
+      };
+      r.readAsDataURL(f);
+    });
+    $('c-logo-clear').addEventListener('click', function () {
+      org.logo = null; $('c-logo').value = ''; this.hidden = true;
+      $('c-logo-hint').textContent = 'It stays in your browser. Nothing is uploaded.';
+      render();
+    });
     ['c-open', 'c-close'].forEach(function (id) { $(id).addEventListener('change', render); });
     $('c-cap').addEventListener('input', render);
     document.querySelectorAll('#c-colors button').forEach(function (b) {
@@ -1037,9 +1236,15 @@ form .btn { justify-self: start; }
     fetch('https://formspree.io/f/' + id, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } })
       .then(function (r) {
         if (!r.ok) throw new Error();
-        form.reset();
-        status.className = 'form-status ok';
-        status.textContent = "Thanks. We'll be in touch soon.";
+        var email = form.querySelector('#f-email').value.trim();
+        var who = form.querySelector('#f-event').value.trim();
+        form.innerHTML = '';
+        var done = document.createElement('div');
+        done.className = 'sent'; done.setAttribute('role', 'status'); done.tabIndex = -1;
+        done.innerHTML = '<svg viewBox="-40 -40 80 80" aria-hidden="true"><g fill="var(--bloom)"><use href="#petal"/><use href="#petal" transform="rotate(90)"/><use href="#petal" transform="rotate(135)"/><use href="#petal" transform="rotate(180)"/><use href="#petal" transform="rotate(225)"/><use href="#petal" transform="rotate(270)"/><use href="#petal" transform="rotate(315)"/></g><use href="#petal" transform="rotate(45)" fill="var(--slot)"/><circle r="4.5" fill="var(--ink)"/></svg><h3>Request sent.</h3><p></p>';
+        done.querySelector('p').textContent = "Thanks. We'll reply to " + email + " to set up a walkthrough" + (who ? ' for ' + who : '') + '.';
+        form.appendChild(done);
+        done.focus();
       })
       .catch(function () { status.textContent = "That didn't go through. Check your connection and try again."; });
   });
