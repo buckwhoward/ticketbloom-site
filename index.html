@@ -113,12 +113,33 @@ p { margin: 0; }
 .board-foot .sum b { font-family: var(--font-mono); font-weight: 500; font-variant-numeric: tabular-nums; }
 .board-note { font-size: 12px; color: var(--muted); }
 
-/* Built-for strip */
-.for { border-block: 1px solid var(--line); padding-block: 22px; overflow: hidden; }
-.for ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 28px; align-items: center; font: 600 18px/1.2 var(--font-display); }
-.for li { display: inline-flex; align-items: center; gap: 28px; }
-.for li + li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--bloom); margin-left: -18px; margin-right: -10px; }
-.for .eyebrow { margin-right: 6px; }
+/* Built-for marquee */
+.for { border-block: 1px solid var(--line); padding-block: 18px; }
+.for .wrap { display: flex; align-items: center; gap: 24px; }
+.for .eyebrow { flex: none; }
+.marquee { flex: 1; min-width: 0; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+.marquee-track { display: flex; width: max-content; }
+.marquee ul { list-style: none; margin: 0; padding: 0 20px 0 0; display: flex; gap: 20px; flex: none; }
+.marquee li { display: inline-flex; align-items: center; gap: 10px; padding: 8px 16px 8px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); white-space: nowrap; font: 600 16px/1 var(--font-display); }
+.marquee li svg { width: 22px; height: 22px; flex: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .marquee-track { animation: marquee 38s linear infinite; }
+  .marquee:hover .marquee-track { animation-play-state: paused; }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marquee { -webkit-mask-image: none; mask-image: none; }
+  .marquee-track { width: auto; }
+  .marquee ul { flex-wrap: wrap; padding: 0; gap: 10px; }
+  .marquee ul[aria-hidden] { display: none; }
+}
+@media (max-width: 640px) { .for .wrap { flex-direction: column; align-items: flex-start; gap: 12px; } .marquee { width: 100%; } }
+
+/* Line icons: 24px grid, 1.75 stroke, soft petal fill for emphasis */
+.ico { fill: none; stroke: currentColor; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; }
+.ico .soft { fill: var(--bloom-soft); stroke: none; }
+.ico .dot { fill: currentColor; stroke: none; }
+.marquee li svg { color: var(--bloom); }
 
 section { scroll-margin-top: 80px; }
 .section { padding-block: clamp(64px, 9vw, 112px); }
@@ -140,9 +161,44 @@ section { scroll-margin-top: 80px; }
 @media (max-width: 900px) { .features { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .features { grid-template-columns: minmax(0, 1fr); } }
 .feature { padding: 28px 28px 32px 0; border-bottom: 1px solid var(--line); display: grid; gap: 10px; align-content: start; min-width: 0; }
-.feature h3 { font-size: 22px; display: flex; align-items: center; gap: 10px; }
-.feature h3 svg { width: 18px; height: 18px; flex: none; }
+.feature h3 { font-size: 22px; }
+.feature .tile { width: 52px; height: 52px; border-radius: 14px; display: grid; place-items: center; background: var(--surface); border: 1px solid var(--line); color: var(--bloom); margin-bottom: 6px; transition: transform .35s cubic-bezier(.2,.8,.2,1), border-color .2s ease; }
+.feature .tile svg { width: 28px; height: 28px; }
+.feature:hover .tile { transform: translateY(-3px) rotate(-4deg); border-color: var(--bloom); }
 .feature p { color: var(--muted); font-size: 16px; }
+
+/* Gate simulator */
+.lab { display: grid; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); gap: clamp(24px, 4vw, 48px); background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: clamp(20px, 3.5vw, 40px); }
+@media (max-width: 880px) { .lab { grid-template-columns: minmax(0, 1fr); } }
+.controls { display: grid; gap: 26px; align-content: start; }
+.ctl { display: grid; gap: 10px; }
+.ctl-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.ctl label, .ctl .lbl { font-size: 14px; font-weight: 600; }
+.ctl output { font: 500 15px/1 var(--font-mono); font-variant-numeric: tabular-nums; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 99px; background: linear-gradient(90deg, var(--bloom) var(--p, 50%), var(--line) var(--p, 50%)); cursor: pointer; }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%; background: var(--surface); border: 2px solid var(--bloom); box-shadow: 0 2px 6px color-mix(in srgb, var(--ink) 25%, transparent); }
+input[type=range]::-moz-range-thumb { width: 18px; height: 18px; border-radius: 50%; background: var(--surface); border: 2px solid var(--bloom); }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; border-radius: 12px; background: var(--paper); border: 1px solid var(--line); }
+.seg button { min-height: 38px; border: 0; border-radius: 9px; background: transparent; color: var(--muted); font: 500 14px/1 var(--font-mono); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px color-mix(in srgb, var(--ink) 18%, transparent); }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.stat { border-radius: 14px; padding: 14px 16px; background: var(--paper); border: 1px solid var(--line); display: grid; gap: 6px; align-content: start; }
+.stat span { font-size: 13px; color: var(--muted); line-height: 1.35; }
+.stat b { font: 800 34px/1 var(--font-display); letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.stat.good { background: var(--bloom-soft); border-color: transparent; }
+.stat.good b { color: var(--bloom); }
+.chart-wrap { display: grid; gap: 14px; min-width: 0; align-content: start; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.legend i { width: 14px; height: 10px; border-radius: 3px; display: inline-block; }
+#gate-chart { width: 100%; height: auto; display: block; overflow: visible; }
+#gate-chart text { font: 500 11px var(--font-mono); fill: var(--muted); }
+#gate-chart .bar { fill: var(--bloom); transition: height .35s ease, y .35s ease; }
+#gate-chart .ga { fill: color-mix(in srgb, var(--muted) 16%, transparent); stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4 3; }
+#gate-chart .cap { stroke: var(--slot); stroke-width: 2; }
+#gate-chart .grid { stroke: var(--line); }
+.sim-note { font-size: 13px; color: var(--muted); }
+.sim-msg { font-size: 15px; min-height: 1.5em; }
 
 /* Demo request */
 .demo .wrap { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(32px, 6vw, 80px); align-items: start; }
@@ -165,6 +221,27 @@ form .btn { justify-self: start; }
 .site-foot .wrap { display: flex; flex-wrap: wrap; gap: 16px 32px; justify-content: space-between; align-items: center; }
 .site-foot .brand { font-size: 18px; color: var(--ink); }
 .site-foot .brand svg { width: 26px; height: 26px; }
+
+/* Scroll reveal: progressive enhancement; content is fully visible where unsupported */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal { animation: rise linear both; animation-timeline: view(); animation-range: entry 5% cover 28%; }
+    .steps li:nth-child(2), .feature:nth-child(3n+2) { animation-range: entry 12% cover 32%; }
+    .steps li:nth-child(3), .feature:nth-child(3n) { animation-range: entry 18% cover 36%; }
+    .steps li:nth-child(4) { animation-range: entry 24% cover 40%; }
+    @keyframes rise { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hero h1 .w, .hero .lede, .hero .cta-row { animation: up .8s cubic-bezier(.2,.8,.2,1) both; }
+  .hero h1 .w:nth-child(2) { animation-delay: .08s; } .hero h1 .w:nth-child(3) { animation-delay: .16s; }
+  .hero .lede { animation-delay: .28s; } .hero .cta-row { animation-delay: .38s; }
+  .board { animation: up 1s .2s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes up { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  .slot.bump { animation: bump .5s ease; }
+  @keyframes bump { 40% { transform: scale(1.03); } }
+}
+.hero h1 .w { display: inline-block; }
 
 /* The mark's petals open on load (from a visible resting state) */
 .mark .petal { transform-origin: 0 0; }
@@ -195,6 +272,7 @@ form .btn { justify-self: start; }
     <nav class="nav" aria-label="Main">
       <a href="#how">How it works</a>
       <a href="#features">Features</a>
+      <a href="#try">Try it</a>
       <a class="btn btn-primary btn-sm" href="#demo">Book a demo</a>
     </nav>
   </div>
@@ -217,7 +295,7 @@ form .btn { justify-self: start; }
           <use class="petal" href="#petal" style="--i:1;--r:45deg" transform="rotate(45)" fill="var(--slot)"/>
           <circle r="4.5" fill="var(--ink)"/>
         </svg>
-        <h1>Fill every <em>slot.</em></h1>
+        <h1><span class="w">Fill</span> <span class="w">every</span> <span class="w"><em>slot.</em></span></h1>
         <p class="lede"><strong>TicketBloom is ticketing built for timed-entry attractions.</strong> Sell by the half hour, cap every slot, get paid straight to your own Square account, and move the line at the gate in seconds.</p>
         <div class="cta-row">
           <a class="btn btn-primary" href="#demo">Book a demo</a>
@@ -242,64 +320,126 @@ form .btn { justify-self: start; }
 
   <div class="for">
     <div class="wrap">
-      <ul>
-        <li><span class="eyebrow">Built for</span></li>
-        <li>Museums and exhibits</li>
-        <li>Zoos and aquariums</li>
-        <li>Gardens</li>
-        <li>Immersive experiences</li>
-        <li>Tours</li>
-        <li>Seasonal festivals</li>
-      </ul>
+      <span class="eyebrow">Built for</span>
+      <div class="marquee">
+        <div class="marquee-track">
+          <ul>
+          <li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9.5 12 4l9 5.5"/><path d="M5 10v8M9.7 10v8M14.3 10v8M19 10v8"/><path d="M3 20.5h18"/></svg>Museums and exhibits</li>
+          <li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="dot" cx="12" cy="16" rx="4.2" ry="3.6"/><circle class="dot" cx="5.8" cy="11" r="1.9"/><circle class="dot" cx="9.6" cy="6.8" r="1.9"/><circle class="dot" cx="14.4" cy="6.8" r="1.9"/><circle class="dot" cx="18.2" cy="11" r="1.9"/></svg>Zoos and aquariums</li>
+          <li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21v-9"/><path d="M12 15.5c-3.6 0-6.5-2.4-6.5-6.5 3.6 0 6.5 2.4 6.5 6.5Z"/><path d="M12 12.5c0-4.1 2.9-6.5 6.5-6.5 0 4.1-2.9 6.5-6.5 6.5Z"/></svg>Botanical gardens</li>
+          <li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 3.5 12.9 9l5.6 1.9-5.6 1.9L11 18.3 9.1 12.8 3.5 10.9 9.1 9Z"/><path d="M18.5 15v4.5M16.25 17.25h4.5"/></svg>Immersive experiences</li>
+          <li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V3.5"/><path d="M6 4h11.5l-2.4 4.3 2.4 4.2H6"/></svg>Guided tours</li>
+          <li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 5.5c6 3.5 13 3.5 19 0"/><path d="M5.6 7.2 6.4 12l2.8-3.8M10.6 8.4l1.4 4.6 1.4-4.6M14.8 8.2l2.8 3.8.8-4.8"/></svg>Seasonal festivals</li>
+          </ul>
+          <ul aria-hidden="true">
+          <li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9.5 12 4l9 5.5"/><path d="M5 10v8M9.7 10v8M14.3 10v8M19 10v8"/><path d="M3 20.5h18"/></svg>Museums and exhibits</li>
+          <li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><ellipse class="dot" cx="12" cy="16" rx="4.2" ry="3.6"/><circle class="dot" cx="5.8" cy="11" r="1.9"/><circle class="dot" cx="9.6" cy="6.8" r="1.9"/><circle class="dot" cx="14.4" cy="6.8" r="1.9"/><circle class="dot" cx="18.2" cy="11" r="1.9"/></svg>Zoos and aquariums</li>
+          <li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21v-9"/><path d="M12 15.5c-3.6 0-6.5-2.4-6.5-6.5 3.6 0 6.5 2.4 6.5 6.5Z"/><path d="M12 12.5c0-4.1 2.9-6.5 6.5-6.5 0 4.1-2.9 6.5-6.5 6.5Z"/></svg>Botanical gardens</li>
+          <li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 3.5 12.9 9l5.6 1.9-5.6 1.9L11 18.3 9.1 12.8 3.5 10.9 9.1 9Z"/><path d="M18.5 15v4.5M16.25 17.25h4.5"/></svg>Immersive experiences</li>
+          <li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21V3.5"/><path d="M6 4h11.5l-2.4 4.3 2.4 4.2H6"/></svg>Guided tours</li>
+          <li><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 5.5c6 3.5 13 3.5 19 0"/><path d="M5.6 7.2 6.4 12l2.8-3.8M10.6 8.4l1.4 4.6 1.4-4.6M14.8 8.2l2.8 3.8.8-4.8"/></svg>Seasonal festivals</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </div>
 
   <section class="section" id="how">
     <div class="wrap">
-      <div class="section-head">
+      <div class="section-head reveal">
         <span class="eyebrow">How it works</span>
         <h2>From empty calendar to scanned ticket.</h2>
         <p>Set it up once. Every day after that runs itself.</p>
       </div>
       <ol class="steps">
-        <li><h3>Set your hours</h3><p>Pick your dates, opening times, slot length and how many guests each slot holds. Price by day, by slot or by ticket type.</p></li>
-        <li><h3>Connect Square</h3><p>Sign in with your Square account. Ticket money lands in your account on Square's normal schedule. We never hold your funds.</p></li>
-        <li><h3>Make it yours</h3><p>Your logo, colors and domain on every page guests see. Confirmation emails come from your name and your address.</p></li>
-        <li><h3>Scan at the gate</h3><p>Use the TicketBloom scanner on iPhone or Android. Scan one ticket in a group and check in the whole party with one tap.</p></li>
+        <li class="reveal"><h3>Set your hours</h3><p>Pick your dates, opening times, slot length and how many guests each slot holds. Price by day, by slot or by ticket type.</p></li>
+        <li class="reveal"><h3>Connect Square</h3><p>Sign in with your Square account. Ticket money lands in your account on Square's normal schedule. We never hold your funds.</p></li>
+        <li class="reveal"><h3>Make it yours</h3><p>Your logo, colors and domain on every page guests see. Confirmation emails come from your name and your address.</p></li>
+        <li class="reveal"><h3>Scan at the gate</h3><p>Use the TicketBloom scanner on iPhone or Android. Scan one ticket in a group and check in the whole party with one tap.</p></li>
       </ol>
     </div>
   </section>
 
   <section class="section" id="features" style="padding-top:0">
     <div class="wrap">
-      <div class="section-head">
+      <div class="section-head reveal">
         <span class="eyebrow">What you get</span>
         <h2>Made for days that sell out by the half hour.</h2>
       </div>
       <div class="features">
-        <div class="feature">
-          <h3><svg viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7.5" fill="none" stroke="var(--bloom)" stroke-width="2"/><path d="M9 4.5V9l3 2" fill="none" stroke="var(--bloom)" stroke-width="2" stroke-linecap="round"/></svg>Capacity per slot</h3>
+        <div class="feature reveal">
+          <span class="tile"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path class="soft" d="M12 12V3a9 9 0 0 1 9 9Z"/><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></span>
+          <h3>Capacity per slot</h3>
           <p>Each entry time has its own limit, so 11:00 never gets 600 people while 3:30 sits empty. Sold-out slots close on their own.</p>
         </div>
-        <div class="feature">
-          <h3><svg viewBox="0 0 18 18" aria-hidden="true"><rect x="2" y="3" width="14" height="12" rx="3" fill="none" stroke="var(--bloom)" stroke-width="2"/><circle cx="9" cy="9" r="2.5" fill="var(--bloom)"/></svg>Your brand, start to finish</h3>
+        <div class="feature reveal">
+          <span class="tile"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path class="soft" d="M3 8V6.5A2.5 2.5 0 0 1 5.5 4h13A2.5 2.5 0 0 1 21 6.5V8Z"/><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 8h18"/><path d="M12 11.5c1.6 0 2.5 1.2 2.5 2.5s-.9 2.5-2.5 2.5-2.5-1.2-2.5-2.5 .9-2.5 2.5-2.5Z"/></svg></span>
+          <h3>Your brand, start to finish</h3>
           <p>White-label by default. Guests buy on your domain, get email from you, and never have to learn our name.</p>
         </div>
-        <div class="feature">
-          <h3><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2 9h14M9 2v14" stroke="var(--bloom)" stroke-width="2" stroke-linecap="round"/></svg>Paid to your Square</h3>
+        <div class="feature reveal">
+          <span class="tile"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path class="soft" d="M4 14h16v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M4 14v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/><path d="M12 3.5V13M8 9.5l4 3.5 4-3.5"/></svg></span>
+          <h3>Paid to your Square</h3>
           <p>Payments run on your own Square account, alongside the card readers you already use at the entrance and the gift shop.</p>
         </div>
-        <div class="feature">
-          <h3><svg viewBox="0 0 18 18" aria-hidden="true"><rect x="3" y="2" width="12" height="14" rx="2.5" fill="none" stroke="var(--bloom)" stroke-width="2"/><path d="M6 7h6M6 11h4" stroke="var(--bloom)" stroke-width="2" stroke-linecap="round"/></svg>Wallet passes</h3>
+        <div class="feature reveal">
+          <span class="tile"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path class="soft" d="M9 7h6v8.5H9Z"/><path d="M9 7h6v8.5H9ZM9 11.25h6"/><path d="M10.5 18.5h3"/></svg></span>
+          <h3>Wallet passes</h3>
           <p>Every ticket can go straight into Apple Wallet, so guests aren't digging through email in the parking lot.</p>
         </div>
-        <div class="feature">
-          <h3><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2 6V3h3M13 3h3v3M16 12v3h-3M5 15H2v-3M5 9h8" fill="none" stroke="var(--bloom)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>A faster gate</h3>
+        <div class="feature reveal">
+          <span class="tile"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8V5.5A1.5 1.5 0 0 1 5.5 4H8M16 4h2.5A1.5 1.5 0 0 1 20 5.5V8M20 16v2.5a1.5 1.5 0 0 1-1.5 1.5H16M8 20H5.5A1.5 1.5 0 0 1 4 18.5V16"/><circle class="soft" cx="12" cy="12" r="5"/><path d="m9.5 12.2 1.8 1.8 3.4-3.6"/></svg></span>
+          <h3>A faster gate</h3>
           <p>Scan, see the party size, wave them through. Staff can also look up an order by name when a guest can't find their ticket.</p>
         </div>
-        <div class="feature">
-          <h3><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2 15l4.5-5 3.5 3 6-8" fill="none" stroke="var(--bloom)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Know what sold it</h3>
+        <div class="feature reveal">
+          <span class="tile"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path class="soft" d="M4 20V15l4.5-4 3.5 3 6-6.5V20Z"/><path d="M4 15l4.5-4 3.5 3 6-6.5"/><path d="M14.5 7.5H18V11"/><path d="M4 20.5h16"/></svg></span>
+          <h3>Know what sold it</h3>
           <p>See which ad, email or post brought in each order, so next year's budget goes where the tickets came from.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="try" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Try it</span>
+        <h2>Watch the line disappear.</h2>
+        <p>Same guests, same entrance. Move the sliders to see what time slots do to the wait at your gate.</p>
+      </div>
+      <div class="lab reveal">
+        <div class="controls">
+          <div class="ctl">
+            <div class="ctl-top"><label for="sim-guests">Guests per day</label><output id="sim-guests-out" for="sim-guests">3,000</output></div>
+            <input id="sim-guests" type="range" min="500" max="6000" step="100" value="3000">
+          </div>
+          <div class="ctl">
+            <div class="ctl-top"><label for="sim-lanes">Entry lanes</label><output id="sim-lanes-out" for="sim-lanes">2</output></div>
+            <input id="sim-lanes" type="range" min="1" max="4" step="1" value="2">
+          </div>
+          <div class="ctl">
+            <span class="lbl" id="sim-slot-lbl">Slot length</span>
+            <div class="seg" role="group" aria-labelledby="sim-slot-lbl">
+              <button type="button" data-slot="1" aria-pressed="false">15 min</button>
+              <button type="button" data-slot="2" aria-pressed="true">30 min</button>
+              <button type="button" data-slot="4" aria-pressed="false">60 min</button>
+            </div>
+          </div>
+          <div class="stats" aria-live="polite">
+            <div class="stat"><span>Longest wait, walk-up entry</span><b id="sim-ga">30 min</b></div>
+            <div class="stat good"><span>Longest wait with time slots</span><b id="sim-tb">0 min</b></div>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <div class="legend">
+            <span><i style="background:color-mix(in srgb, var(--muted) 30%, transparent);outline:1.5px dashed var(--muted);outline-offset:-1.5px"></i>Walk-up arrivals</span>
+            <span><i style="background:var(--bloom)"></i>Timed arrivals</span>
+            <span><i style="background:var(--slot);height:3px"></i>What your gate can scan</span>
+          </div>
+          <svg id="gate-chart" viewBox="0 0 640 300" role="img" aria-label="Guests arriving every 15 minutes, walk-up versus timed entry"></svg>
+          <p class="sim-msg" id="sim-msg"></p>
+          <p class="sim-note">Illustrative model of one day, open 10 AM to 6 PM. Assumes each lane scans about 6 guests a minute and walk-up guests bunch up at opening and lunchtime.</p>
         </div>
       </div>
     </div>
@@ -307,7 +447,7 @@ form .btn { justify-self: start; }
 
   <section class="section demo" id="demo">
     <div class="wrap">
-      <div class="section-head">
+      <div class="section-head reveal">
         <span class="eyebrow">Book a demo</span>
         <h2>See it with your own event.</h2>
         <p>Tell us about your attraction and we'll walk you through TicketBloom set up with your own dates, entry times and capacity.</p>
@@ -393,8 +533,106 @@ form .btn { justify-self: start; }
       var i = open[Math.floor(Math.pow(Math.random(), 1.8) * open.length)];
       slots[i].sold = Math.min(CAP, slots[i].sold + 1 + Math.floor(Math.random() * 4));
       render();
+      var b = list.children[i] && list.children[i].firstChild; if (b) b.classList.add('bump');
     }, 1400);
   }
+
+
+  // Gate simulator: guests arriving per 15-minute bucket over an 8-hour day, through a fluid queue.
+  (function () {
+    var N = 32, RATE = 6;
+    var g = document.getElementById('sim-guests'), l = document.getElementById('sim-lanes');
+    var svg = document.getElementById('gate-chart'), NS = 'http://www.w3.org/2000/svg';
+    var slotLen = 2;
+    var walk = (function () {
+      var w = [], s = 0;
+      for (var i = 0; i < N; i++) {
+        var v = 1.5 * Math.exp(-Math.pow((i - 0.6) / 1.7, 2)) + 0.6 * Math.exp(-Math.pow((i - 12) / 4.5, 2)) + 0.3 * Math.exp(-Math.pow((i - 21) / 4, 2)) + 0.05;
+        w.push(v); s += v;
+      }
+      return w.map(function (v) { return v / s; });
+    })();
+    var PATTERN = { 1: [1], 2: [0.65, 0.35], 4: [0.4, 0.3, 0.2, 0.1] };
+
+    function maxWait(arr, cap, perMin) {
+      var q = 0, m = 0;
+      arr.forEach(function (a) { q = Math.max(0, q + a - cap); m = Math.max(m, q / perMin); });
+      return m;
+    }
+    function fmt(min) {
+      if (min < 1) return '0 min';
+      if (min >= 120) return '2 hr+';
+      return Math.round(min) + ' min';
+    }
+    function el(name, attrs) {
+      var e = document.createElementNS(NS, name);
+      for (var k in attrs) e.setAttribute(k, attrs[k]);
+      return e;
+    }
+    function fill(input) {
+      var p = (input.value - input.min) / (input.max - input.min) * 100;
+      input.style.setProperty('--p', p + '%');
+    }
+
+    function update() {
+      var G = +g.value, lanes = +l.value, perMin = lanes * RATE, cap = perMin * 15;
+      fill(g); fill(l);
+      document.getElementById('sim-guests-out').textContent = G.toLocaleString('en-US');
+      document.getElementById('sim-lanes-out').textContent = lanes;
+
+      var ga = walk.map(function (w) { return w * G; });
+      // Each slot holds at most what the gate can scan without a line forming.
+      var pat = PATTERN[slotLen], slots = N / slotLen;
+      var slotCap = Math.floor(Math.min(cap * slotLen, cap / pat[0]));
+      var perSlot = Math.min(G / slots, slotCap);
+      var sold = Math.round(perSlot * slots);
+      var tb = [];
+      for (var s = 0; s < slots; s++) pat.forEach(function (p) { tb.push(perSlot * p); });
+
+      document.getElementById('sim-ga').textContent = fmt(maxWait(ga, cap, perMin));
+      document.getElementById('sim-tb').textContent = fmt(maxWait(tb, cap, perMin));
+      var msg = document.getElementById('sim-msg');
+      msg.textContent = sold < G
+        ? 'Slots cap at ' + Math.floor(perSlot).toLocaleString('en-US') + ' guests, so ' + sold.toLocaleString('en-US') + ' tickets sell with no line. Add a lane to sell the other ' + (G - sold).toLocaleString('en-US') + '.'
+        : Math.round(perSlot).toLocaleString('en-US') + ' guests per ' + (slotLen * 15) + '-minute slot. Everyone gets in without a line.';
+
+      // Draw
+      var W = 640, H = 300, L = 40, R = 8, T = 10, B = 26, cw = W - L - R, ch = H - T - B;
+      var top = Math.max(Math.max.apply(null, ga), cap) * 1.12;
+      var step = top > 600 ? 200 : top > 300 ? 100 : 50;
+      var y = function (v) { return T + ch - v / top * ch; };
+      var bw = cw / N;
+      while (svg.firstChild) svg.removeChild(svg.firstChild);
+      for (var t = 0; t <= top; t += step) {
+        svg.appendChild(el('line', { class: 'grid', x1: L, x2: W - R, y1: y(t), y2: y(t) }));
+        var lab = el('text', { x: L - 6, y: y(t) + 4, 'text-anchor': 'end' }); lab.textContent = t; svg.appendChild(lab);
+      }
+      ['10 AM', '12 PM', '2 PM', '4 PM', '6 PM'].forEach(function (s, i) {
+        var tx = el('text', { x: L + i * 8 * bw, y: H - 6, 'text-anchor': i === 0 ? 'start' : i === 4 ? 'end' : 'middle' });
+        tx.textContent = s; svg.appendChild(tx);
+      });
+      var d = 'M' + L + ' ' + y(0);
+      ga.forEach(function (v, i) { d += ' L' + (L + i * bw + bw / 2).toFixed(1) + ' ' + y(v).toFixed(1); });
+      d += ' L' + (W - R) + ' ' + y(0) + ' Z';
+      svg.appendChild(el('path', { class: 'ga', d: d }));
+      tb.forEach(function (v, i) {
+        svg.appendChild(el('rect', { class: 'bar', x: L + i * bw + 2, width: bw - 4, y: y(v), height: Math.max(0, T + ch - y(v)), rx: 2 }));
+      });
+      svg.appendChild(el('line', { class: 'cap', x1: L, x2: W - R, y1: y(cap), y2: y(cap) }));
+      svg.appendChild(el('line', { class: 'grid', x1: L, x2: W - R, y1: y(0), y2: y(0) }));
+    }
+
+    g.addEventListener('input', update);
+    l.addEventListener('input', update);
+    document.querySelectorAll('.seg button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        slotLen = +b.dataset.slot;
+        document.querySelectorAll('.seg button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+        update();
+      });
+    });
+    update();
+  })();
 
   // Demo form: posts to Formspree when a form ID is set in the form-endpoint meta tag.
   var form = document.getElementById('demo-form');
