@@ -8,7 +8,20 @@
 <meta name="form-endpoint" content="xjykvjlo">
 <meta property="og:title" content="TicketBloom: fill every slot">
 <meta property="og:description" content="Ticketing for timed-entry attractions: museums, zoos, gardens, tours and immersive experiences.">
+<link rel="canonical" href="https://getticketbloom.com/">
+<meta name="theme-color" content="#F6F8F3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0C1B16" media="(prefers-color-scheme: dark)">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://getticketbloom.com/">
+<meta property="og:site_name" content="TicketBloom">
+<meta property="og:image" content="https://getticketbloom.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="TicketBloom: Fill every slot. Ticketing for timed-entry attractions.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://getticketbloom.com/og-image.png">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;600;700;800&family=Funnel+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -282,6 +295,10 @@ section { scroll-margin-top: 80px; }
 .row:nth-child(n+3) .bar i { background: #10261F; opacity: .55; }
 .row b { text-align: right; font: 500 11px/1 var(--font-mono); font-variant-numeric: tabular-nums; }
 .row.flash b { color: #E5376B; }
+.hours { display: flex; align-items: flex-end; gap: 4px; height: 52px; }
+.hours i { flex: 1; height: 0; border-radius: 3px 3px 0 0; background: #C9D3CD; transition: height .9s cubic-bezier(.2,.8,.2,1); }
+.hours i.me { background: #F2B033; }
+.hours-x { display: flex; justify-content: space-between; font: 500 9.5px/1 var(--font-mono); color: #56695F; margin-top: -4px; }
 .toast { position: absolute; left: 12px; right: 12px; bottom: 14px; background: #10261F; color: #EAF2EC; border-radius: 14px; padding: 11px 12px; display: flex; gap: 10px; align-items: center; font-size: 11.5px; line-height: 1.35; transform: translateY(140%); transition: transform .55s cubic-bezier(.2,.8,.2,1); }
 .toast.show { transform: none; }
 .toast .pip { width: 8px; height: 8px; border-radius: 50%; background: #F2B033; flex: none; box-shadow: 0 0 0 4px rgba(242,176,51,.2); }
@@ -606,6 +623,11 @@ form .btn { justify-self: start; }
                   <div class="row"><span>Partner site</span><span class="bar"><i data-w="24"></i></span><b>307</b></div>
                   <div class="row"><span>Direct</span><span class="bar"><i data-w="19"></i></span><b>240</b></div>
                 </div>
+                <div class="src">
+                  <span>Sold by entry time</span>
+                  <div class="hours" id="j-hours"><i data-h="100"></i><i data-h="100"></i><i data-h="97"></i><i class="me" data-h="88"></i><i data-h="80"></i><i data-h="72"></i><i data-h="66"></i><i data-h="58"></i><i data-h="49"></i><i data-h="40"></i><i data-h="31"></i><i data-h="22"></i></div>
+                  <div class="hours-x"><span>10 AM</span><span>3:30 PM</span></div>
+                </div>
               </div>
               <div class="toast" id="j-toast"><span class="pip"></span><span><b>Order #10482</b> · 4 tickets · from Instagram ad “Spring bloom”</span></div>
             </div>
@@ -882,10 +904,12 @@ form .btn { justify-self: start; }
         } },
       { dur: 7000, reset: function () {
           document.querySelectorAll('.s-learn .bar i').forEach(function (b) { b.style.width = '0'; });
+          document.querySelectorAll('#j-hours i').forEach(function (b) { b.style.height = '0'; });
           $('j-toast').classList.remove('show'); $('j-ig').classList.remove('flash');
           $('j-ig').querySelector('b').textContent = '1,292'; $('j-sold').textContent = '3,408'; $('j-rev').textContent = '$81,792';
         }, run: function () {
           at(250, function () { document.querySelectorAll('.s-learn .bar i').forEach(function (b) { b.style.width = b.dataset.w + '%'; }); });
+          at(700, function () { document.querySelectorAll('#j-hours i').forEach(function (b, k) { setTimeout(function () { b.style.height = b.dataset.h + '%'; }, reduce ? 0 : k * 50); }); });
           at(2200, function () { $('j-toast').classList.add('show'); });
           at(2800, function () { $('j-ig').classList.add('flash'); $('j-ig').querySelector('b').textContent = '1,296'; $('j-sold').textContent = '3,412'; $('j-rev').textContent = '$81,888'; });
         } }

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Page not found · TicketBloom</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@700;800&family=Funnel+Sans:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+:root { --paper: #F6F8F3; --ink: #10261F; --muted: #56695F; --line: #D6DFD8; --bloom: #E5376B; --bloom-ink: #FFFFFF; --slot: #F2B033; color-scheme: light; }
+@media (prefers-color-scheme: dark) { :root { --paper: #0C1B16; --ink: #EAF2EC; --muted: #9DB2A7; --line: #24392F; --bloom: #FF5C8A; --bloom-ink: #1A0710; --slot: #F6C04E; color-scheme: dark; } }
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--paper); color: var(--ink); font: 400 17px/1.6 'Funnel Sans', system-ui, sans-serif; padding-inline: 16px; }
+main { display: grid; gap: 20px; justify-items: start; max-width: 520px; padding-block: 48px; }
+svg { width: 64px; height: 64px; }
+.code { font: 500 13px/1 'IBM Plex Mono', monospace; letter-spacing: .12em; color: var(--muted); }
+h1 { margin: 0; font: 800 clamp(44px, 9vw, 72px)/0.95 'Funnel Display', sans-serif; letter-spacing: -0.04em; text-wrap: balance; }
+h1 em { font-style: normal; color: var(--bloom); }
+p { margin: 0; color: var(--muted); }
+a { display: inline-flex; align-items: center; min-height: 46px; padding: 0 22px; border-radius: 999px; background: var(--bloom); color: var(--bloom-ink); font-weight: 600; text-decoration: none; }
+a:focus-visible { outline: 3px solid var(--slot); outline-offset: 3px; }
+</style>
+</head>
+<body>
+<main>
+  <svg viewBox="-40 -40 80 80" aria-hidden="true"><defs><path id="p" d="M0-7C7-13 7.5-27 0-35C-7.5-27-7-13 0-7Z"/></defs><g fill="var(--line)"><use href="#p"/><use href="#p" transform="rotate(45)"/><use href="#p" transform="rotate(90)"/><use href="#p" transform="rotate(135)"/><use href="#p" transform="rotate(180)"/><use href="#p" transform="rotate(225)"/><use href="#p" transform="rotate(270)"/><use href="#p" transform="rotate(315)"/></g><circle r="4.5" fill="var(--muted)"/></svg>
+  <span class="code">404 · NO SUCH SLOT</span>
+  <h1>This entry time <em>doesn't exist.</em></h1>
+  <p>The page you're looking for isn't here. The front gate is.</p>
+  <a href="/">Back to TicketBloom</a>
+</main>
+</body>
+</html>
