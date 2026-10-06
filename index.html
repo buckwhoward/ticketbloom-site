@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TicketBloom</title>
+<meta name="description" content="TicketBloom is ticketing for timed-entry attractions. Sell by the time slot, cap every slot, get paid straight to your Square account, and move guests through the gate fast.">
+<meta name="form-endpoint" content="xjykvjlo">
+<meta property="og:title" content="TicketBloom: fill every slot">
+<meta property="og:description" content="Ticketing for timed-entry attractions: museums, zoos, gardens, tours and immersive experiences.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;600;700;800&family=Funnel+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a timetable. Left-weighted headline beside a live slot board; quiet sections below on one 1120px column. */
+:root {
+  --paper: #F6F8F3;      /* stem-tinted off-white */
+  --surface: #FFFFFF;
+  --ink: #10261F;        /* deep stem green */
+  --muted: #56695F;
+  --line: #D6DFD8;
+  --bloom: #E5376B;      /* petal pink: primary accent */
+  --bloom-ink: #FFFFFF;
+  --slot: #F2B033;       /* marigold: the chosen slot */
+  --slot-soft: #FCEFD2;
+  --bloom-soft: #FBE1E9;
+  --sold: #B7C3BB;
+  --font-display: 'Funnel Display', 'Funnel Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Funnel Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --gutter: clamp(16px, 4vw, 40px);
+  --radius: 14px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0C1B16; --surface: #13261F; --ink: #EAF2EC; --muted: #9DB2A7; --line: #24392F;
+    --bloom: #FF5C8A; --bloom-ink: #1A0710; --slot: #F6C04E; --slot-soft: #3A2F14; --bloom-soft: #3B1624; --sold: #3A4F45;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0C1B16; --surface: #13261F; --ink: #EAF2EC; --muted: #9DB2A7; --line: #24392F;
+  --bloom: #FF5C8A; --bloom-ink: #1A0710; --slot: #F6C04E; --slot-soft: #3A2F14; --bloom-soft: #3B1624; --sold: #3A4F45;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font: 400 17px/1.6 var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+img, svg { max-width: 100%; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--slot); outline-offset: 3px; border-radius: 6px; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; letter-spacing: -0.02em; line-height: 1.05; }
+p { margin: 0; }
+.wrap { max-width: 1120px; margin-inline: auto; padding-inline: var(--gutter); }
+.eyebrow { font: 500 12px/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+
+/* Header */
+.site-head { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: color-mix(in srgb, var(--paper) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.site-head .wrap { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-block: 14px; }
+.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; font: 700 22px/1 var(--font-display); letter-spacing: -0.03em; }
+.brand svg { width: 34px; height: 34px; }
+.nav { display: flex; align-items: center; gap: 28px; font-size: 15px; }
+.nav a:not(.btn) { text-decoration: none; color: var(--muted); }
+.nav a:not(.btn):hover { color: var(--ink); }
+@media (max-width: 760px) { .nav a:not(.btn) { display: none; } }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 0 22px; border-radius: 999px; border: 0; font: 600 16px/1 var(--font-body); text-decoration: none; cursor: pointer; transition: transform .15s ease, background-color .15s ease; }
+.btn-primary { background: var(--bloom); color: var(--bloom-ink); }
+.btn-primary:hover { transform: translateY(-1px); }
+.btn-ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line); }
+.btn-ghost:hover { box-shadow: inset 0 0 0 1.5px var(--ink); }
+.btn-sm { min-height: 38px; padding: 0 16px; font-size: 14px; }
+
+/* Hero */
+.hero { padding-block: clamp(48px, 8vw, 96px) clamp(48px, 7vw, 88px); }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: clamp(32px, 6vw, 72px); align-items: center; }
+@media (max-width: 900px) { .hero .wrap { grid-template-columns: minmax(0, 1fr); } }
+.hero h1 { font-size: clamp(56px, 9.5vw, 116px); font-weight: 800; letter-spacing: -0.045em; line-height: 0.92; }
+.hero h1 em { font-style: normal; color: var(--bloom); }
+.hero-copy { display: grid; gap: 28px; }
+.hero-copy .lede { font-size: clamp(18px, 1.6vw, 21px); color: var(--muted); max-width: 34em; }
+.hero-copy .lede strong { color: var(--ink); font-weight: 600; }
+.cta-row { display: flex; flex-wrap: wrap; gap: 12px; }
+
+/* Slot board */
+.board { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 22px; display: grid; gap: 16px; box-shadow: 0 30px 60px -40px color-mix(in srgb, var(--ink) 45%, transparent); }
+.board-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.board-head h2 { font-size: 20px; letter-spacing: -0.01em; }
+.board-head .date { font: 500 13px/1 var(--font-mono); color: var(--muted); }
+.slots { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.slot { width: 100%; text-align: left; display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 12px; row-gap: 8px; align-items: center; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); font: inherit; cursor: pointer; transition: border-color .15s ease, background-color .15s ease; }
+.slot:hover:not(:disabled) { border-color: var(--ink); }
+.slot .time { white-space: nowrap; font: 500 14px/1 var(--font-mono); font-variant-numeric: tabular-nums; }
+.slot .left { justify-self: end; white-space: nowrap; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.slot .bar { grid-column: 1 / -1; height: 5px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.slot .bar i { display: block; height: 100%; background: var(--bloom); border-radius: inherit; transition: width .6s ease; }
+.slot.low .left { color: var(--bloom); font-weight: 600; }
+.slot:disabled { cursor: not-allowed; opacity: .7; }
+.slot:disabled .bar i { background: var(--sold); }
+.slot:disabled .time { text-decoration: line-through; text-decoration-color: var(--muted); }
+.slot[aria-pressed="true"] { border-color: var(--slot); background: var(--slot-soft); }
+.slot[aria-pressed="true"] .bar i { background: var(--slot); }
+.board-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-top: 4px; border-top: 1px dashed var(--line); padding-top: 16px; }
+.board-foot .sum { font-size: 15px; }
+.board-foot .sum b { font-family: var(--font-mono); font-weight: 500; font-variant-numeric: tabular-nums; }
+.board-note { font-size: 12px; color: var(--muted); }
+
+/* Built-for strip */
+.for { border-block: 1px solid var(--line); padding-block: 22px; overflow: hidden; }
+.for ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 28px; align-items: center; font: 600 18px/1.2 var(--font-display); }
+.for li { display: inline-flex; align-items: center; gap: 28px; }
+.for li + li::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--bloom); margin-left: -18px; margin-right: -10px; }
+.for .eyebrow { margin-right: 6px; }
+
+section { scroll-margin-top: 80px; }
+.section { padding-block: clamp(64px, 9vw, 112px); }
+.section-head { display: grid; gap: 14px; max-width: 40em; margin-bottom: clamp(32px, 5vw, 56px); }
+.section-head h2 { font-size: clamp(36px, 5vw, 60px); font-weight: 700; }
+.section-head p { color: var(--muted); font-size: 18px; }
+
+/* Steps */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; counter-reset: step; }
+@media (max-width: 900px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 36px; } }
+@media (max-width: 520px) { .steps { grid-template-columns: minmax(0, 1fr); } }
+.steps li { counter-increment: step; display: grid; gap: 10px; align-content: start; padding-right: 24px; }
+.steps li::before { content: counter(step); display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--ink); font: 500 14px/1 var(--font-mono); margin-bottom: 8px; }
+.steps h3 { font-size: 22px; }
+.steps p { color: var(--muted); font-size: 16px; }
+
+/* Features */
+.features { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+@media (max-width: 900px) { .features { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .features { grid-template-columns: minmax(0, 1fr); } }
+.feature { padding: 28px 28px 32px 0; border-bottom: 1px solid var(--line); display: grid; gap: 10px; align-content: start; min-width: 0; }
+.feature h3 { font-size: 22px; display: flex; align-items: center; gap: 10px; }
+.feature h3 svg { width: 18px; height: 18px; flex: none; }
+.feature p { color: var(--muted); font-size: 16px; }
+
+/* Demo request */
+.demo .wrap { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(32px, 6vw, 80px); align-items: start; }
+@media (max-width: 860px) { .demo .wrap { grid-template-columns: minmax(0, 1fr); } }
+.demo .section-head { margin-bottom: 0; }
+form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: clamp(20px, 3vw, 32px); }
+@media (max-width: 560px) { form { grid-template-columns: minmax(0, 1fr); } }
+.fld { display: grid; gap: 6px; min-width: 0; }
+.fld.full { grid-column: 1 / -1; }
+.fld label { font-size: 14px; font-weight: 600; }
+.fld input, .fld select, .fld textarea { width: 100%; min-height: 46px; padding: 10px 14px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); font: 400 16px/1.4 var(--font-body); }
+.fld textarea { min-height: 96px; resize: vertical; }
+.fld input:focus, .fld select:focus, .fld textarea:focus { outline: none; border-color: var(--bloom); }
+form .btn { justify-self: start; }
+.form-status { grid-column: 1 / -1; font-size: 15px; color: var(--muted); }
+.form-status.ok { color: var(--ink); font-weight: 600; }
+
+/* Footer */
+.site-foot { border-top: 1px solid var(--line); padding-block: 36px; font-size: 14px; color: var(--muted); }
+.site-foot .wrap { display: flex; flex-wrap: wrap; gap: 16px 32px; justify-content: space-between; align-items: center; }
+.site-foot .brand { font-size: 18px; color: var(--ink); }
+.site-foot .brand svg { width: 26px; height: 26px; }
+
+/* The mark's petals open on load (from a visible resting state) */
+.mark .petal { transform-origin: 0 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .hero-mark .petal { animation: open .9s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--i) * 60ms); }
+  @keyframes open { from { transform: rotate(var(--r)) scale(.55); } to { transform: rotate(var(--r)) scale(1); } }
+}
+.hero-mark { width: 64px; height: 64px; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <path id="petal" d="M0-7C7-13 7.5-27 0-35C-7.5-27-7-13 0-7Z"/>
+  </defs>
+</svg>
+
+<header class="site-head">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="TicketBloom home">
+      <svg class="mark" viewBox="-40 -40 80 80" aria-hidden="true">
+        <g fill="var(--bloom)"><use href="#petal"/><use href="#petal" transform="rotate(90)"/><use href="#petal" transform="rotate(135)"/><use href="#petal" transform="rotate(180)"/><use href="#petal" transform="rotate(225)"/><use href="#petal" transform="rotate(270)"/><use href="#petal" transform="rotate(315)"/></g>
+        <use href="#petal" transform="rotate(45)" fill="var(--slot)"/><circle r="4.5" fill="var(--ink)"/>
+      </svg>
+      TicketBloom
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a class="btn btn-primary btn-sm" href="#demo">Book a demo</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-copy">
+        <svg class="mark hero-mark" viewBox="-40 -40 80 80" aria-hidden="true">
+          <g fill="var(--bloom)">
+            <use class="petal" href="#petal" style="--i:0;--r:0deg" transform="rotate(0)"/>
+            <use class="petal" href="#petal" style="--i:2;--r:90deg" transform="rotate(90)"/>
+            <use class="petal" href="#petal" style="--i:3;--r:135deg" transform="rotate(135)"/>
+            <use class="petal" href="#petal" style="--i:4;--r:180deg" transform="rotate(180)"/>
+            <use class="petal" href="#petal" style="--i:5;--r:225deg" transform="rotate(225)"/>
+            <use class="petal" href="#petal" style="--i:6;--r:270deg" transform="rotate(270)"/>
+            <use class="petal" href="#petal" style="--i:7;--r:315deg" transform="rotate(315)"/>
+          </g>
+          <use class="petal" href="#petal" style="--i:1;--r:45deg" transform="rotate(45)" fill="var(--slot)"/>
+          <circle r="4.5" fill="var(--ink)"/>
+        </svg>
+        <h1>Fill every <em>slot.</em></h1>
+        <p class="lede"><strong>TicketBloom is ticketing built for timed-entry attractions.</strong> Sell by the half hour, cap every slot, get paid straight to your own Square account, and move the line at the gate in seconds.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#demo">Book a demo</a>
+          <a class="btn btn-ghost" href="#how">See how it works</a>
+        </div>
+      </div>
+
+      <div class="board" aria-label="Example of a time-slot picker">
+        <div class="board-head">
+          <h2>Riverside Gardens</h2>
+          <span class="date">SAT · MAY 9 · ENTRY TIMES</span>
+        </div>
+        <ul class="slots" id="slots"></ul>
+        <div class="board-foot">
+          <p class="sum" id="sum">2 tickets · <b>11:00 AM</b> · <b>$48.00</b></p>
+          <button class="btn btn-primary btn-sm" type="button" tabindex="-1" aria-disabled="true">Checkout</button>
+        </div>
+        <p class="board-note">Example event. Guests see your name, colors and domain, not ours.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="for">
+    <div class="wrap">
+      <ul>
+        <li><span class="eyebrow">Built for</span></li>
+        <li>Museums and exhibits</li>
+        <li>Zoos and aquariums</li>
+        <li>Gardens</li>
+        <li>Immersive experiences</li>
+        <li>Tours</li>
+        <li>Seasonal festivals</li>
+      </ul>
+    </div>
+  </div>
+
+  <section class="section" id="how">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">How it works</span>
+        <h2>From empty calendar to scanned ticket.</h2>
+        <p>Set it up once. Every day after that runs itself.</p>
+      </div>
+      <ol class="steps">
+        <li><h3>Set your hours</h3><p>Pick your dates, opening times, slot length and how many guests each slot holds. Price by day, by slot or by ticket type.</p></li>
+        <li><h3>Connect Square</h3><p>Sign in with your Square account. Ticket money lands in your account on Square's normal schedule. We never hold your funds.</p></li>
+        <li><h3>Make it yours</h3><p>Your logo, colors and domain on every page guests see. Confirmation emails come from your name and your address.</p></li>
+        <li><h3>Scan at the gate</h3><p>Use the TicketBloom scanner on iPhone or Android. Scan one ticket in a group and check in the whole party with one tap.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" id="features" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">What you get</span>
+        <h2>Made for days that sell out by the half hour.</h2>
+      </div>
+      <div class="features">
+        <div class="feature">
+          <h3><svg viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7.5" fill="none" stroke="var(--bloom)" stroke-width="2"/><path d="M9 4.5V9l3 2" fill="none" stroke="var(--bloom)" stroke-width="2" stroke-linecap="round"/></svg>Capacity per slot</h3>
+          <p>Each entry time has its own limit, so 11:00 never gets 600 people while 3:30 sits empty. Sold-out slots close on their own.</p>
+        </div>
+        <div class="feature">
+          <h3><svg viewBox="0 0 18 18" aria-hidden="true"><rect x="2" y="3" width="14" height="12" rx="3" fill="none" stroke="var(--bloom)" stroke-width="2"/><circle cx="9" cy="9" r="2.5" fill="var(--bloom)"/></svg>Your brand, start to finish</h3>
+          <p>White-label by default. Guests buy on your domain, get email from you, and never have to learn our name.</p>
+        </div>
+        <div class="feature">
+          <h3><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2 9h14M9 2v14" stroke="var(--bloom)" stroke-width="2" stroke-linecap="round"/></svg>Paid to your Square</h3>
+          <p>Payments run on your own Square account, alongside the card readers you already use at the entrance and the gift shop.</p>
+        </div>
+        <div class="feature">
+          <h3><svg viewBox="0 0 18 18" aria-hidden="true"><rect x="3" y="2" width="12" height="14" rx="2.5" fill="none" stroke="var(--bloom)" stroke-width="2"/><path d="M6 7h6M6 11h4" stroke="var(--bloom)" stroke-width="2" stroke-linecap="round"/></svg>Wallet passes</h3>
+          <p>Every ticket can go straight into Apple Wallet, so guests aren't digging through email in the parking lot.</p>
+        </div>
+        <div class="feature">
+          <h3><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2 6V3h3M13 3h3v3M16 12v3h-3M5 15H2v-3M5 9h8" fill="none" stroke="var(--bloom)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>A faster gate</h3>
+          <p>Scan, see the party size, wave them through. Staff can also look up an order by name when a guest can't find their ticket.</p>
+        </div>
+        <div class="feature">
+          <h3><svg viewBox="0 0 18 18" aria-hidden="true"><path d="M2 15l4.5-5 3.5 3 6-8" fill="none" stroke="var(--bloom)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Know what sold it</h3>
+          <p>See which ad, email or post brought in each order, so next year's budget goes where the tickets came from.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section demo" id="demo">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">Book a demo</span>
+        <h2>See it with your own event.</h2>
+        <p>Tell us about your attraction and we'll walk you through TicketBloom set up with your own dates, entry times and capacity.</p>
+      </div>
+      <form id="demo-form" novalidate>
+        <input type="hidden" name="_subject" value="TicketBloom demo request">
+        <div class="fld"><label for="f-name">Your name</label><input id="f-name" name="name" autocomplete="name" required></div>
+        <div class="fld"><label for="f-email">Work email</label><input id="f-email" name="email" type="email" autocomplete="email" required></div>
+        <div class="fld"><label for="f-event">Event or attraction</label><input id="f-event" name="event" required></div>
+        <div class="fld"><label for="f-city">City</label><input id="f-city" name="city" autocomplete="address-level2"></div>
+        <div class="fld full"><label for="f-size">Tickets per year</label>
+          <select id="f-size" name="size">
+            <option value="">Choose one</option>
+            <option>Under 25,000</option>
+            <option>25,000 to 100,000</option>
+            <option>100,000 to 500,000</option>
+            <option>Over 500,000</option>
+          </select>
+        </div>
+        <div class="fld full"><label for="f-notes">What do you use today? <span style="font-weight:400;color:var(--muted)">(optional)</span></label><textarea id="f-notes" name="notes"></textarea></div>
+        <button class="btn btn-primary" type="submit">Book a demo</button>
+        <p class="form-status" id="form-status" role="status"></p>
+      </form>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <svg class="mark" viewBox="-40 -40 80 80" aria-hidden="true">
+        <g fill="var(--bloom)"><use href="#petal"/><use href="#petal" transform="rotate(90)"/><use href="#petal" transform="rotate(135)"/><use href="#petal" transform="rotate(180)"/><use href="#petal" transform="rotate(225)"/><use href="#petal" transform="rotate(270)"/><use href="#petal" transform="rotate(315)"/></g>
+        <use href="#petal" transform="rotate(45)" fill="var(--slot)"/><circle r="4.5" fill="var(--ink)"/>
+      </svg>
+      TicketBloom
+    </a>
+    <p>&copy; 2026 TicketBloom</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // Slot board: example inventory for one day. Sales tick in gently so the board feels live.
+  var CAP = 250, PRICE = 24, QTY = 2;
+  var slots = [
+    { t: '10:00 AM', sold: 250 }, { t: '10:30 AM', sold: 250 },
+    { t: '11:00 AM', sold: 214 }, { t: '11:30 AM', sold: 196 },
+    { t: '12:00 PM', sold: 161 }, { t: '12:30 PM', sold: 118 },
+    { t: '1:00 PM', sold: 72 },  { t: '1:30 PM', sold: 31 }
+  ];
+  var picked = 2;
+  var list = document.getElementById('slots');
+  var sum = document.getElementById('sum');
+
+  function render() {
+    list.innerHTML = '';
+    slots.forEach(function (s, i) {
+      var left = CAP - s.sold, out = left <= 0;
+      var li = document.createElement('li');
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'slot' + (!out && left <= 40 ? ' low' : '');
+      b.disabled = out;
+      b.setAttribute('aria-pressed', String(i === picked));
+      b.innerHTML = '<span class="time">' + s.t + '</span><span class="left">' + (out ? 'Sold out' : left + ' left') +
+        '</span><span class="bar"><i style="width:' + Math.min(100, s.sold / CAP * 100).toFixed(1) + '%"></i></span>';
+      b.addEventListener('click', function () { picked = i; render(); });
+      li.appendChild(b);
+      list.appendChild(li);
+    });
+    var p = slots[picked];
+    sum.innerHTML = QTY + ' tickets · <b>' + p.t + '</b> · <b>$' + (QTY * PRICE).toFixed(2) + '</b>';
+  }
+  render();
+
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduce) {
+    var ticks = 0;
+    var timer = setInterval(function () {
+      // Earlier slots sell faster, like a real day.
+      var open = slots.map(function (s, i) { return i; }).filter(function (i) { return slots[i].sold < CAP && i !== picked; });
+      if (!open.length || ++ticks > 60) { clearInterval(timer); return; }
+      var i = open[Math.floor(Math.pow(Math.random(), 1.8) * open.length)];
+      slots[i].sold = Math.min(CAP, slots[i].sold + 1 + Math.floor(Math.random() * 4));
+      render();
+    }, 1400);
+  }
+
+  // Demo form: posts to Formspree when a form ID is set in the form-endpoint meta tag.
+  var form = document.getElementById('demo-form');
+  var status = document.getElementById('form-status');
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    status.className = 'form-status';
+    var bad = Array.prototype.find.call(form.querySelectorAll('[required]'), function (el) { return !el.value.trim() || (el.type === 'email' && !/^\S+@\S+\.\S+$/.test(el.value)); });
+    if (bad) { status.textContent = 'Please add your ' + bad.previousElementSibling.textContent.toLowerCase() + '.'; bad.focus(); return; }
+    var meta = document.querySelector('meta[name="form-endpoint"]');
+    var id = meta && meta.content.trim();
+    if (!id) { status.textContent = 'Requests can\'t be sent right now. Please try again later.'; return; }
+    status.textContent = 'Sending...';
+    fetch('https://formspree.io/f/' + id, { method: 'POST', body: new FormData(form), headers: { Accept: 'application/json' } })
+      .then(function (r) {
+        if (!r.ok) throw new Error();
+        form.reset();
+        status.className = 'form-status ok';
+        status.textContent = "Thanks. We'll be in touch soon.";
+      })
+      .catch(function () { status.textContent = "That didn't go through. Check your connection and try again."; });
+  });
+})();
+</script>
+</body>
+</html>

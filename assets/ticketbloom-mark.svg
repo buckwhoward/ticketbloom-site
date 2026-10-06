@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-40 -40 80 80" role="img" aria-label="TicketBloom">
+  <path d="M0-7C7-13 7.5-27 0-35C-7.5-27-7-13 0-7Z" fill="#E5376B" transform="rotate(0)"/>
+  <path d="M0-7C7-13 7.5-27 0-35C-7.5-27-7-13 0-7Z" fill="#E5376B" transform="rotate(90)"/>
+  <path d="M0-7C7-13 7.5-27 0-35C-7.5-27-7-13 0-7Z" fill="#E5376B" transform="rotate(135)"/>
+  <path d="M0-7C7-13 7.5-27 0-35C-7.5-27-7-13 0-7Z" fill="#E5376B" transform="rotate(180)"/>
+  <path d="M0-7C7-13 7.5-27 0-35C-7.5-27-7-13 0-7Z" fill="#E5376B" transform="rotate(225)"/>
+  <path d="M0-7C7-13 7.5-27 0-35C-7.5-27-7-13 0-7Z" fill="#E5376B" transform="rotate(270)"/>
+  <path d="M0-7C7-13 7.5-27 0-35C-7.5-27-7-13 0-7Z" fill="#E5376B" transform="rotate(315)"/>
+  <path d="M0-7C7-13 7.5-27 0-35C-7.5-27-7-13 0-7Z" fill="#F2B033" transform="rotate(45)"/>
+  <circle r="4.5" fill="#10261F"/>
+</svg>
